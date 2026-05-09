@@ -5,5 +5,5 @@ export function isMac(): boolean {
 }
 
 export function getShortcutLabel(): string {
-  return isMac() ? "⌥X" : "Alt+X";
+  return isMac() ? "⌃⇧X" : "Alt+X";
 }

@@ -1,14 +1,14 @@
-import type { Highlight, StorageData } from "../types";
+import type { HighlightEvent, HighlightStorage } from "../types";
 
 const STORAGE_KEY = "sra_highlights";
 
 /**
  * Load all highlight data from chrome.storage.local
  */
-export async function loadAllHighlights(): Promise<StorageData> {
+export async function loadAllHighlights(): Promise<HighlightStorage> {
   return new Promise((resolve) => {
     chrome.storage.local.get(STORAGE_KEY, (result) => {
-      resolve((result[STORAGE_KEY] as StorageData) ?? {});
+      resolve((result[STORAGE_KEY] as HighlightStorage) ?? {});
     });
   });
 }
@@ -16,7 +16,7 @@ export async function loadAllHighlights(): Promise<StorageData> {
 /**
  * Get highlights for a specific video
  */
-export async function getHighlights(videoId: string): Promise<Highlight[]> {
+export async function getHighlights(videoId: string): Promise<HighlightEvent[]> {
   const all = await loadAllHighlights();
   return all[videoId] ?? [];
 }
@@ -24,7 +24,7 @@ export async function getHighlights(videoId: string): Promise<Highlight[]> {
 /**
  * Save a new highlight for a video
  */
-export async function saveHighlight(highlight: Highlight): Promise<void> {
+export async function saveHighlight(highlight: HighlightEvent): Promise<void> {
   const all = await loadAllHighlights();
   const existing = all[highlight.videoId] ?? [];
   // Insert sorted by timestamp
@@ -47,7 +47,7 @@ export async function updateHighlightNote(
 ): Promise<void> {
   const all = await loadAllHighlights();
   const highlights = all[videoId] ?? [];
-  const idx = highlights.findIndex((h) => h.id === highlightId);
+  const idx = highlights.findIndex((h: HighlightEvent) => h.id === highlightId);
   if (idx !== -1) {
     highlights[idx] = { ...highlights[idx], note };
     all[videoId] = highlights;
@@ -66,7 +66,7 @@ export async function deleteHighlight(
 ): Promise<void> {
   const all = await loadAllHighlights();
   const highlights = all[videoId] ?? [];
-  all[videoId] = highlights.filter((h) => h.id !== highlightId);
+  all[videoId] = highlights.filter((h: HighlightEvent) => h.id !== highlightId);
   return new Promise((resolve) => {
     chrome.storage.local.set({ [STORAGE_KEY]: all }, resolve);
   });

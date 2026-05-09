@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Stream Replay Assistant",
+  "name": "Live Assist Mode",
   "version": "1.0.0",
-  "description": "Bookmark and review important moments while watching YouTube stream replays.",
+  "description": "AI-powered highlight detection for streamers. Bookmark moments with hotkeys, detect chat spikes, and review highlights on YouTube & Twitch.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -14,32 +14,46 @@
     "scripting"
   ],
   "host_permissions": [
-    "https://www.youtube.com/*"
+    "https://www.youtube.com/*",
+    "https://www.twitch.tv/*"
   ],
   "background": {
-    "service_worker": "background.js",
-    "type": "module"
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/watch*"],
+      "matches": [
+        "https://www.youtube.com/watch*",
+        "https://www.youtube.com/live/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.twitch.tv/*"
+      ],
       "js": ["content.js"],
       "run_at": "document_idle"
     }
   ],
+  "action": {
+    "default_popup": "public/index.html",
+    "default_title": "Live Assist Mode"
+  },
   "commands": {
     "mark-highlight": {
       "suggested_key": {
         "default": "Alt+X",
-        "mac": "Alt+X"
+        "mac": "Ctrl+Shift+X"
       },
-      "description": "Instantly mark a highlight at current timestamp"
+      "description": "Bookmark highlight at current timestamp"
     }
   },
   "web_accessible_resources": [
     {
       "resources": ["assets/*.css", "assets/*.js", "chunks/*.js"],
-      "matches": ["https://www.youtube.com/*"]
+      "matches": ["https://www.youtube.com/*", "https://www.twitch.tv/*"]
     }
   ]
 }

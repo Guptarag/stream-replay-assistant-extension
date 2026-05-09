@@ -8,9 +8,11 @@ import { getShortcutLabel } from "./utils/platform";
 
 export default function App() {
   const [collapsed, setCollapsed] = useState(false);
+  const [bufferSeconds, setBufferSeconds] = useState(10);
+  
   const {
     highlights, videoId, isCapturing, lastSaved,
-    markHighlight, updateNote, removeHighlight, exportJSON,
+    markHighlight, updateNote, removeHighlight, exportJSON, downloadClips,
   } = useHighlights();
 
   useKeyboardShortcut(markHighlight);
@@ -98,13 +100,59 @@ export default function App() {
           {/* Footer export */}
           {highlights.length > 0 && (
             <div className="sra-footer">
-              <button className="sra-export-btn" onClick={exportJSON}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"
-                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                Export JSON
-              </button>
+              <div className="sra-buffer-selector">
+                <label className="sra-buffer-label">Clip Buffer</label>
+                <select 
+                  className="sra-buffer-select"
+                  value={bufferSeconds}
+                  onChange={(e) => setBufferSeconds(Number(e.target.value))}
+                >
+                  <option value={5}>5 seconds (10s clips)</option>
+                  <option value={10}>10 seconds (20s clips)</option>
+                  <option value={15}>15 seconds (30s clips)</option>
+                  <option value={20}>20 seconds (40s clips)</option>
+                </select>
+              </div>
+              
+              <div className="sra-export-label">Export Clips</div>
+              <div className="sra-export-options">
+                <button 
+                  className="sra-format-option"
+                  onClick={() => downloadClips('open', bufferSeconds)}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <div>
+                    <div className="sra-format-title">Open in Browser</div>
+                    <div className="sra-format-desc">Open each clip in new tab</div>
+                  </div>
+                </button>
+                <button 
+                  className="sra-format-option"
+                  onClick={() => downloadClips('ytdlp', bufferSeconds)}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <div>
+                    <div className="sra-format-title">yt-dlp Script</div>
+                    <div className="sra-format-desc">Shell script to download</div>
+                  </div>
+                </button>
+                <button 
+                  className="sra-format-option"
+                  onClick={() => downloadClips('txt', bufferSeconds)}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 12h6M9 16h6M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <div>
+                    <div className="sra-format-title">Text Instructions</div>
+                    <div className="sra-format-desc">Download guide with URLs</div>
+                  </div>
+                </button>
+              </div>
             </div>
           )}
         </div>
